@@ -5,7 +5,11 @@ Taken from an example in the book Kubernetes Up and Running.
 While it's possible to run `apt get` to install `ping`, I thought I'd look for a less hacky way to get a Mongo ReplicaSet running in K8s.
 
 ### To install, run:
-`kubectl apply -f mongo-full.yaml`
+`kubectl apply -f mongo-configmap.yaml`
+
+`kubectl apply -f mongo-service.yaml`
+
+`kubectl apply -f mongo-statefulset.yaml`
 
 ### To delete, run:
 

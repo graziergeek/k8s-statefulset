@@ -1,0 +1,45 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: mongo
+spec:
+  serviceName: "mongo"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:3.4.17
+        command:
+        - mongod
+        - --replSet
+        - rs0
+        ports:
+        - containerPort: 27017
+          name: web
+      # This container initializes the mongodb, then sleeps.
+      - name: init-mongo
+        image: mongo:3.4.17
+        command:
+        - bash
+        - /config/init.sh
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: mongodb-persistent-storage-claim
+          mountPath: /data/db
+      volumes:
+      - name: config
+        configMap:
+          name: "mongo-init"
+  volumeClaimTemplates:
+  - metadata:
+      name: mongodb-persistent-storage-claim
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
