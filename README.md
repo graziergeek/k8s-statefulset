@@ -7,13 +7,13 @@ Some things are GKE-specific.
 
 1. There's a [simple MongoDB-ReplicaSet K8s installation](./mongodb-simple/README.md) that I scarfed from the book _Kubernetes Up and Running_ that failed to work.
 
-1. There's a more "enterprise-ready" [MongoDB HA installation](./gke-mongodb-demo/README.md) that I found in [Paul Done's](https://github.com/pkdone) gitub repo that I'm working with now.
+1. There's a more "enterprise-ready" [MongoDB HA installation](https://github.com/graziergeek/gke-mongodb-demo.git) that I found in [Paul Done's](https://github.com/pkdone) gitub repo that I'm working with now.
 
 1. There will be an [ElasticSearch project](./gke-elasticsearch-demo/README.md) that will show how to work with StatefulSets for ElasticSearch.
 
 # How to Create a K8s Cluster
 
-1. See also [K8s prerequisites](./gke-mongodb-demo/README.md#1.1_prerequisites) in the `gke-mongodb-demo` `README` file.
+1. See also [K8s prerequisites](https://github.com/graziergeek/gke-mongodb-demo/tree/432ac4402e5ee769359b97f17dc155042f0d8268#11-prerequisites) in the `gke-mongodb-demo` `README` file.
 1. (Optional) [Create GCP Admin Service Account and Download Key](#creating-a-gcp-account-token)
 1. Make sure Kubernetes API is enabled in cloud console
 1. run:
