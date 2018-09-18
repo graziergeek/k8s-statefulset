@@ -1,6 +1,8 @@
 # Working with StatefulSets in K8s
 This experimentation is a WIP...
 
+Some things are GKE-specific.
+
 1. There's a [simple grails CRUD app](./grails-crud/README.md) that works on the MongoDB database.  More capabilities will be added to this as time goes on.
 
 1. There's a [simple MongoDB-ReplicaSet K8s installation](./mongodb-simple/README.md) that I scarfed from the book _Kubernetes Up and Running_ that failed to work.
@@ -12,7 +14,7 @@ This experimentation is a WIP...
 # How to Create a K8s Cluster
 
 1. See also [K8s prerequisites](./gke-mongodb-demo/README.md#1.1_prerequisites) in the `gke-mongodb-demo` `README` file.
-1. [Create GCP Admin Service Account and Download Key](#creating-a-gcp-account-token)
+1. (Optional) [Create GCP Admin Service Account and Download Key](#creating-a-gcp-account-token)
 1. Make sure Kubernetes API is enabled in cloud console
 1. run:
 ```
@@ -30,8 +32,8 @@ gcloud container clusters create css-sandbox \
     1. `./gradlew build`
     1. `./gradlew prepareDocker` (?)
     1. `docker build -t grails-crud ./build/docker`
-    1. `docker tag grails-crud gcr.io/cunningham-sandbox/grails-crud:1.2` (match the `image` name:version in grails-crud.yaml)
-    1. `docker push gcr.io/cunningham-sandbox/grails-crud:1.2` (push image to GCR)
+    1. `docker tag grails-crud gcr.io/<GCP-projectID>/grails-crud:1.2` (match the `image` name:version in grails-crud.yaml)
+    1. `docker push gcr.io/<GCP-projectID>/grails-crud:1.2` (push image to GCR)
     1. `kubectl apply -f k8s/grails-crud.yaml` (deploy. pulls image from GCR.)
     1. `kubectl get pods` (should see something like:)
 ```
@@ -42,7 +44,7 @@ mongo-1                        1/1       Running       0          1h
 mongo-2                        1/1       Running       0          1h
 ```
 
-## Creating a GCP Account Token
+## Creating a GCP Account Token (Optional)
 Whenever downloading a private key, put it in a safe place.  By all means do **NOT** add it to source control.
 
 To create and download a gcloud private key file if you DON'T already have a service account:
@@ -68,7 +70,6 @@ To create and download a gcloud private key file if you DON'T already have a ser
 1. The key is downloaded to your computer.
 
 1. Store the key file in a safe and accessible place.  **Do not check it in to source control**.
-    1. In the create cluster examples, we store the key file under `${HOME}/.k8sconfig/<name>.json`.  The host volume file name doesn't matter as long as the environment file name is specified as `account.json`.
 
 To create and download a gcloud private key file if you DO already have a service account:
 
@@ -85,4 +86,4 @@ To create and download a gcloud private key file if you DO already have a servic
 1. The key is downloaded to your computer.
 
 1. Store the key file in a safe and accessible place.  **Do not check it in to source control**.
-    1. In the create cluster examples, we store the key file under `${HOME}/.k8sconfig/<name>.json`.  The host volume file name doesn't matter as long as the environment file name is specified as `account.json`.
+    1. e.g., `${HOME}/.k8sconfig/<name>.json`.
