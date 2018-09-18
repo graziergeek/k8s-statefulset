@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: grails-crud
+  name: grails-crud
+spec:
+  ports:
+  - name: "8080"
+    port: 8080
+    targetPort: 8080
+  selector:
+    io.kompose.service: grails-crud
+  type: LoadBalancer
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: grails-crud
+  name: grails-crud
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: grails-crud
+    spec:
+      containers:
+      - env:
+        - name: NODE_ENV
+          value: development
+        image: gcr.io/cunningham-sandbox/grails-crud:1.2
+        name: grails-crud
+        ports:
+        - containerPort: 8080
+        resources: {}
+      restartPolicy: Always
+status: {}
