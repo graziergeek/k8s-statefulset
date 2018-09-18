@@ -1,7 +1,7 @@
 # mongodb-simple Installation Instructions
 Taken from an example in the book Kubernetes Up and Running.
 
-**NOTE: I couldn't get this example to work** because the Debian GKE node instance did not have the `ping` command (nor others) required by the MongoDB ConfigMap init script.
+**NOTE: I couldn't get this example to work** because the GKE node instances do not have the `ping` command (nor others) required by the MongoDB ConfigMap init script.
 While it's possible to run `apt get` to install `ping`, I thought I'd look for a less hacky way to get a Mongo ReplicaSet running in K8s.
 
 ### To install, run:
