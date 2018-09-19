@@ -1,0 +1,20 @@
+---
+# Source: redis-ha/templates/redis-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: stage-redis-ha
+  labels:
+    app: redis-ha
+    heritage: "Tiller"
+    release: "stage"
+    chart: redis-ha-2.2.3
+rules:
+- apiGroups:
+    - ""
+  resources:
+    - pods
+  verbs:
+    - get
+    - list
+    - patch

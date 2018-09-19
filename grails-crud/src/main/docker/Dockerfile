@@ -3,6 +3,8 @@ MAINTAINER John Doe "john.doe@example.com"
 
 EXPOSE 8080
 
+ENV MONGODB_HOST=mongo
+
 WORKDIR /app
 COPY *.jar application.jar
 

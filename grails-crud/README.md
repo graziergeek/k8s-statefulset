@@ -62,6 +62,8 @@ class Board {
 ### delete
   `curl -i -X DELETE localhost:8080/board/1`
 
+### TODO: auto-test with docker compose
+
 # Dockerize
 [see item 5 in this doc](http://guides.grails.org/grails-as-docker-container/guide/#usingOnlyDocker)
 
@@ -75,8 +77,21 @@ Create docker-compose.yaml in project root to run both `grails-crud` and `mongod
   `docker-compose stop && docker-compose rm -vf`
 
 # Run on k8s
-#### To deploy, run:
-`kubectl apply -f k8s/grails-crud.yaml`
+### Deploy App
+1. `./gradlew build`
+1. `./gradlew prepareDocker`
+1. `docker build -t grails-crud ./build/docker`
+1. `docker tag grails-crud gcr.io/<GCP-projectID>/grails-crud:1.4` (change the `image` name:version in grails-crud.yaml to match)
+1. `docker push gcr.io/<GCP-projectID>/grails-crud:1.4` (push image to GCR)
+1. `kubectl apply -f k8s/grails-crud.yaml` (deploy. pulls image from GCR.)
+1. `kubectl get pods` (should see something like:)
+```
+NAME                           READY     STATUS        RESTARTS   AGE
+grails-crud-666b6794c5-mgl8m   1/1       Running       0          6s
+mongo-0                        1/1       Running       0          1h
+mongo-1                        1/1       Running       0          1h
+mongo-2                        1/1       Running       0          1h
+```
 
 #### Get env from K8s:
 `export HOST=$(kubectl get service grails-crud -o jsonpath='{.status.loadBalancer.ingress[0].ip}')`

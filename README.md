@@ -3,13 +3,9 @@ This experimentation is a WIP...
 
 Some things are GKE-specific.
 
-1. There's a [simple grails CRUD app](./grails-crud/README.md) that works on the MongoDB database.  More capabilities will be added to this as time goes on.
+1. There's a [simple grails CRUD app](./grails-crud/README.md) that works on the MongoDB database.  More capabilities will be added to this as time goes on to test Elasticsearch, etc.
 
-1. There's a [simple MongoDB-ReplicaSet K8s installation](./mongodb-simple/README.md) that I scarfed from the book _Kubernetes Up and Running_ that failed to work.
-
-1. There's a more "enterprise-ready" [MongoDB HA installation](https://github.com/graziergeek/gke-mongodb-demo.git) that I found in [Paul Done's](https://github.com/pkdone) gitub repo that I'm working with now.
-
-1. There will be an [ElasticSearch project](./gke-elasticsearch-demo/README.md) that will show how to work with StatefulSets for ElasticSearch.
+1. All data sources are derived from Helm charts and live under the `./helm` directory.  See [helm-chart-basics](./helm/helm-chart-basics.md)
 
 # How to Create a K8s Cluster
 
@@ -25,15 +21,15 @@ gcloud container clusters create css-sandbox \
   --machine-type=n1-standard-2 \
   --enable-autoscaling --min-nodes=3 --max-nodes=9
 ```
-1. Deploy MongoDB
-    1. ..._working on this..._
+1. Deploy MongoDB, Elasticsearch, Redis HA, ...
+    1. See [Helm manifests](./helm/helm-chart-basices.md)
 1. Deploy App (this is for test app but steps are pretty much the same)
     1. In the [grails-crud](./grails-crud/README.md) test app...
     1. `./gradlew build`
-    1. `./gradlew prepareDocker` (?)
+    1. `./gradlew prepareDocker`
     1. `docker build -t grails-crud ./build/docker`
-    1. `docker tag grails-crud gcr.io/<GCP-projectID>/grails-crud:1.2` (match the `image` name:version in grails-crud.yaml)
-    1. `docker push gcr.io/<GCP-projectID>/grails-crud:1.2` (push image to GCR)
+    1. `docker tag grails-crud gcr.io/<GCP-projectID>/grails-crud:1.4` (change the `image` name:version in grails-crud.yaml to match)
+    1. `docker push gcr.io/<GCP-projectID>/grails-crud:1.4` (push image to GCR)
     1. `kubectl apply -f k8s/grails-crud.yaml` (deploy. pulls image from GCR.)
     1. `kubectl get pods` (should see something like:)
 ```

@@ -1,0 +1,23 @@
+---
+# Source: mongodb-replicaset/templates/mongodb-service.yaml
+# A headless service to create DNS records
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  labels:
+    app: mongodb-replicaset
+    chart: mongodb-replicaset-3.5.6
+    heritage: Tiller
+    release: stage
+  name: stage-mongodb-replicaset
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: mongodb
+      port: 27017
+  selector:
+    app: mongodb-replicaset
+    release: stage

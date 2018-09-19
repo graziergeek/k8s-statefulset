@@ -1,0 +1,50 @@
+---
+# Source: redis-ha/templates/redis-sentinel-deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: stage-redis-ha-sentinel
+  labels:
+    app: redis-ha
+    heritage: "Tiller"
+    release: "stage"
+    chart: redis-ha-2.2.3
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: redis-ha
+        release: stage
+        component: sentinel
+        name: stage-redis-ha-sentinel
+    spec:
+      serviceAccountName: stage-redis-ha
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: redis-ha
+                  release: stage
+                  component: sentinel
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - name: sentinel
+        image: quay.io/smile/redis:4.0.8r0
+        resources:
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+          
+        env:
+          - name: SENTINEL
+            value: "true"
+          - name: REDIS_CHART_PREFIX
+            value: stage-redis-ha-
+        ports:
+          - containerPort: 26379

@@ -1,0 +1,44 @@
+-> helm upgrade mongodb-test stable/mongodb-replicaset -f css-values.yaml
+Release "mongodb-test" has been upgraded. Happy Helming!
+LAST DEPLOYED: Wed Sep 19 13:31:07 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/ConfigMap
+NAME           DATA  AGE
+mongo-init     1     2m
+mongo-mongodb  1     2m
+mongo-tests    1     2m
+
+==> v1/Service
+NAME   TYPE       CLUSTER-IP  EXTERNAL-IP  PORT(S)    AGE
+mongo  ClusterIP  None        <none>       27017/TCP  2m
+
+==> v1beta2/StatefulSet
+NAME   DESIRED  CURRENT  AGE
+mongo  3        3        2m
+
+==> v1/Pod(related)
+NAME     READY  STATUS   RESTARTS  AGE
+mongo-0  1/1    Running  0         2m
+mongo-1  1/1    Running  0         1m
+mongo-2  0/1    Running  0         34s
+
+
+NOTES:
+1. After the statefulset is created completely, one can check which instance is primary by running:
+
+    $ for ((i = 0; i < 3; ++i)); do kubectl exec --namespace default stage-mongodb-replicaset-$i -- sh -c 'mongo --eval="printjson(rs.isMaster())"'; done
+
+2. One can insert a key into the primary instance of the mongodb replica set by running the following:
+    MASTER_POD_NAME must be replaced with the name of the master found from the previous step.
+
+    $ kubectl exec --namespace default stage-mongodb-replicaset-0 -- mongo --eval="printjson(db.test.insert({key1: 'value1'}))"
+
+3. One can fetch the keys stored in the primary or any of the slave nodes in the following manner.
+    POD_NAME must be replaced by the name of the pod being queried.
+
+    $ kubectl exec --namespace default stage-mongodb-replicaset-2 -- mongo --eval="rs.slaveOk(); db.test.find().forEach(printjson)"
+
+

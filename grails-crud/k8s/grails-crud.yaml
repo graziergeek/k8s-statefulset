@@ -34,7 +34,9 @@ spec:
       - env:
         - name: NODE_ENV
           value: development
-        image: gcr.io/cunningham-sandbox/grails-crud:1.2
+        - name: MONGODB_HOST
+          value: stage-mongodb-replicaset
+        image: gcr.io/cunningham-sandbox/grails-crud:1.4
         name: grails-crud
         ports:
         - containerPort: 8080

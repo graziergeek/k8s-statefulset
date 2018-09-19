@@ -65,7 +65,7 @@ grails:
 ---
 grails:
     mongodb:
-        host: mongo
+        host: ${MONGODB_HOST}
         port: 27017
         username: ""
         password: ""

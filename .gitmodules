@@ -1,3 +1,0 @@
-[submodule "gke-mongodb-demo"]
-	path = gke-mongodb-demo
-	url = https://github.com/graziergeek/gke-mongodb-demo

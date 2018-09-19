@@ -1,0 +1,155 @@
+---
+# Source: mongodb-replicaset/templates/mongodb-statefulset.yaml
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  labels:
+    app: mongodb-replicaset
+    chart: mongodb-replicaset-3.5.6
+    heritage: Tiller
+    release: stage
+  name: stage-mongodb-replicaset
+spec:
+  selector:
+    matchLabels:
+      app: mongodb-replicaset
+      release: stage
+  serviceName: stage-mongodb-replicaset
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: mongodb-replicaset
+        release: stage
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9216"
+        prometheus.io/path: "/metrics"
+    spec:
+      securityContext:
+        fsGroup: 999
+        runAsNonRoot: true
+        runAsUser: 999
+        
+      initContainers:
+        - name: copy-config
+          image: busybox
+          command:
+            - "sh"
+          args:
+            - "-c"
+            - |
+              set -e
+              set -x
+
+              cp /configdb-readonly/mongod.conf /data/configdb/mongod.conf
+          volumeMounts:
+            - name: workdir
+              mountPath: /work-dir
+            - name: config
+              mountPath: /configdb-readonly
+            - name: configdir
+              mountPath: /data/configdb
+        - name: install
+          image: "k8s.gcr.io/mongodb-install:0.6"
+          args:
+            - --work-dir=/work-dir
+          imagePullPolicy: "IfNotPresent"
+          volumeMounts:
+            - name: workdir
+              mountPath: /work-dir
+        - name: bootstrap
+          image: "mongo:3.6"
+          command:
+            - /work-dir/peer-finder
+          args:
+            - -on-start=/init/on-start.sh
+            - "-service=stage-mongodb-replicaset"
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: REPLICA_SET
+              value: rs0
+          volumeMounts:
+            - name: workdir
+              mountPath: /work-dir
+            - name: init
+              mountPath: /init
+            - name: configdir
+              mountPath: /data/configdb
+            - name: datadir
+              mountPath: /data/db
+      containers:
+        - name: mongodb-replicaset
+          image: "mongo:3.6"
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - name: mongodb
+              containerPort: 27017
+          resources:
+            {}
+            
+          command:
+            - mongod
+          args:
+            - --config=/data/configdb/mongod.conf
+            - --dbpath=/data/db
+            - --replSet=rs0
+            - --port=27017
+            - --bind_ip=0.0.0.0
+          livenessProbe:
+            exec:
+              command:
+                - mongo
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+          readinessProbe:
+            exec:
+              command:
+                - mongo
+                - --eval
+                - "db.adminCommand('ping')"
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+          volumeMounts:
+            - name: datadir
+              mountPath: /data/db
+            - name: configdir
+              mountPath: /data/configdb
+            - name: workdir
+              mountPath: /work-dir
+
+      volumes:
+        - name: config
+          configMap:
+            name: stage-mongodb-replicaset-mongodb
+        - name: init
+          configMap:
+            defaultMode: 0755
+            name: stage-mongodb-replicaset-init
+        - name: workdir
+          emptyDir: {}
+        - name: configdir
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+        annotations:
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "10Gi"

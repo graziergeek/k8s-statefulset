@@ -1,0 +1,25 @@
+---
+# Source: redis-ha/templates/redis-master-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: stage-redis-ha-master-svc
+  labels:
+    app: redis-ha
+    heritage: "Tiller"
+    release: "stage"
+    chart: redis-ha-2.2.3
+  annotations:
+    {}
+    
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: redis-ha
+    release: "stage"
+    redis-node: "true"
+    redis-role: "master"
+  type: "ClusterIP"

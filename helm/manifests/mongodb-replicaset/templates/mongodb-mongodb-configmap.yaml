@@ -1,0 +1,15 @@
+---
+# Source: mongodb-replicaset/templates/mongodb-mongodb-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: mongodb-replicaset
+    chart: mongodb-replicaset-3.5.6
+    heritage: Tiller
+    release: stage
+  name: stage-mongodb-replicaset-mongodb
+data:
+  mongod.conf: |
+    null
+    
