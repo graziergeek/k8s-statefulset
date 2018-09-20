@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Installs helm including server-side tiller.
+# NOTE: We don't use tiller in this example. This script is only kept around for reference.
+#
+# Installs helm including cluster-side tiller.
 # Expects a cluster up an running and current kube config pointing to it.
 ### NOTE: check to see if tiller is already running in the cluster *before* you run this script:
 ###     kubectl get pods -n kube-system

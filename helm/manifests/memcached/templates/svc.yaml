@@ -1,0 +1,22 @@
+---
+# Source: memcached/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: stage-memcached
+  labels:
+    app: stage-memcached
+    chart: "memcached-2.3.1"
+    release: "stage"
+    heritage: "Tiller"
+  annotations:
+    {}
+    
+spec:
+  clusterIP: None
+  ports:
+  - name: memcache
+    port: 11211
+    targetPort: memcache
+  selector:
+    app: stage-memcached

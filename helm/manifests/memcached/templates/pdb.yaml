@@ -1,0 +1,15 @@
+---
+# Source: memcached/templates/pdb.yaml
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: stage-memcached
+spec:
+  selector:
+    matchLabels:
+      app: stage-memcached
+      chart: "memcached-2.3.1"
+      release: "stage"
+      heritage: "Tiller"
+  minAvailable: 2
+  

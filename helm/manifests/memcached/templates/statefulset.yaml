@@ -1,0 +1,58 @@
+---
+# Source: memcached/templates/statefulset.yaml
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: stage-memcached
+  labels:
+    app: stage-memcached
+    chart: "memcached-2.3.1"
+    release: "stage"
+    heritage: "Tiller"
+spec:
+  serviceName: stage-memcached
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: stage-memcached
+        chart: "memcached-2.3.1"
+        release: "stage"
+        heritage: "Tiller"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchLabels:
+                app:  stage-memcached
+                release: "stage"
+      containers:
+      - name: stage-memcached
+        image: memcached:1.5.6-alpine
+        imagePullPolicy: ""
+        command:
+        - memcached
+        - -m 64
+        - -o
+        - modern
+        - -v
+        ports:
+        - name: memcache
+          containerPort: 11211
+        livenessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          
