@@ -33,11 +33,11 @@ spec:
       - env:
         - name: NODE_ENV
           value: development
-        - name: MONGODB_HOST
+        - name: MONGODB_URL
           valueFrom:
             configMapKeyRef:
-              key: host
-              name: mongodb
+              key: url
+              name: mongodb-test
         image: gcr.io/cunningham-sandbox/grails-crud:1.5
         imagePullPolicy: Always
         name: grails-crud
