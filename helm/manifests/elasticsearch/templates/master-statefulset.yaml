@@ -5,20 +5,17 @@ kind: StatefulSet
 metadata:
   labels:
     app: elasticsearch
-    chart: elasticsearch-1.7.2
+    chart: elasticsearch-1.11.0
     component: "master"
-    heritage: Tiller
-    release: stage
-  name: stage-elasticsearch-master
+  name: elasticsearch-master
 spec:
-  serviceName: stage-elasticsearch-master
+  serviceName: elasticsearch-master
   replicas: 3
   template:
     metadata:
       labels:
         app: elasticsearch
         component: "master"
-        release: stage
     spec:
       securityContext:
         fsGroup: 1000
@@ -31,19 +28,18 @@ spec:
               labelSelector:
                 matchLabels:
                   app: "elasticsearch"
-                  release: "stage"
                   component: "master"
       initContainers:
       # see https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
       # and https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html#mlockall
       - name: "sysctl"
-        image: "busybox"
+        image: "busybox:latest"
         imagePullPolicy: "Always"
         command: ["sysctl", "-w", "vm.max_map_count=262144"]
         securityContext:
           privileged: true
       - name: "chown"
-        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.0"
+        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.2"
         imagePullPolicy: "IfNotPresent"
         command:
         - /bin/bash
@@ -61,13 +57,13 @@ spec:
         - name: NODE_DATA
           value: "false"
         - name: DISCOVERY_SERVICE
-          value: stage-elasticsearch-discovery
+          value: elasticsearch-discovery
         - name: PROCESSORS
           valueFrom:
             resourceFieldRef:
               resource: limits.cpu
         - name: ES_JAVA_OPTS
-          value: "-Djava.net.preferIPv4Stack=true -Xms512m -Xmx512m"
+          value: "-Djava.net.preferIPv4Stack=true -Xms512m -Xmx512m "
         - name: MINIMUM_MASTER_NODES
           value: "2"
         resources:
@@ -82,7 +78,7 @@ spec:
             path: /_cluster/health?local=true
             port: 9200
           initialDelaySeconds: 5
-        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.0"
+        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.2"
         imagePullPolicy: "IfNotPresent"
         ports:
         - containerPort: 9300
@@ -97,7 +93,7 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: stage-elasticsearch
+          name: elasticsearch
   updateStrategy:
     type: OnDelete
   volumeClaimTemplates:

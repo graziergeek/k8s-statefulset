@@ -5,20 +5,17 @@ kind: StatefulSet
 metadata:
   labels:
     app: elasticsearch
-    chart: elasticsearch-1.7.2
+    chart: elasticsearch-1.11.0
     component: "data"
-    heritage: Tiller
-    release: stage
-  name: stage-elasticsearch-data
+  name: elasticsearch-data
 spec:
-  serviceName: stage-elasticsearch-data
+  serviceName: elasticsearch-data
   replicas: 2
   template:
     metadata:
       labels:
         app: elasticsearch
         component: "data"
-        release: stage
     spec:
       securityContext:
         fsGroup: 1000
@@ -31,19 +28,18 @@ spec:
               labelSelector:
                 matchLabels:
                   app: "elasticsearch"
-                  release: "stage"
                   component: "data"
       initContainers:
       # see https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
       # and https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-configuration-memory.html#mlockall
       - name: "sysctl"
-        image: "busybox"
+        image: "busybox:latest"
         imagePullPolicy: "Always"
         command: ["sysctl", "-w", "vm.max_map_count=262144"]
         securityContext:
           privileged: true
       - name: "chown"
-        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.0"
+        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.2"
         imagePullPolicy: "IfNotPresent"
         command:
         - /bin/bash
@@ -59,7 +55,7 @@ spec:
       - name: elasticsearch
         env:
         - name: DISCOVERY_SERVICE
-          value: stage-elasticsearch-discovery
+          value: elasticsearch-discovery
         - name: NODE_MASTER
           value: "false"
         - name: PROCESSORS
@@ -67,10 +63,10 @@ spec:
             resourceFieldRef:
               resource: limits.cpu
         - name: ES_JAVA_OPTS
-          value: "-Djava.net.preferIPv4Stack=true -Xms1536m -Xmx1536m"
+          value: "-Djava.net.preferIPv4Stack=true -Xms1536m -Xmx1536m "
         - name: MINIMUM_MASTER_NODES
           value: "2"
-        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.0"
+        image: "docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.2"
         imagePullPolicy: "IfNotPresent"
         ports:
         - containerPort: 9300
@@ -111,7 +107,7 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: stage-elasticsearch
+          name: elasticsearch
   updateStrategy:
     type: OnDelete
   volumeClaimTemplates:

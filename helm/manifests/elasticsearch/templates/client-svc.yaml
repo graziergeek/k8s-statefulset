@@ -5,11 +5,9 @@ kind: Service
 metadata:
   labels:
     app: elasticsearch
-    chart: elasticsearch-1.7.2
+    chart: elasticsearch-1.11.0
     component: "client"
-    heritage: Tiller
-    release: stage
-  name: stage-elasticsearch-client
+  name: elasticsearch-client
 
 spec:
   ports:
@@ -19,6 +17,5 @@ spec:
   selector:
     app: elasticsearch
     component: "client"
-    release: stage
   type: ClusterIP
   

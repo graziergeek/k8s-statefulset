@@ -1,4 +1,4 @@
-appVersion: 6.4.0
+appVersion: 6.4.2
 description: Flexible and powerful open source, distributed real-time search and analytics
   engine.
 home: https://www.elastic.co/products/elasticsearch
@@ -18,4 +18,4 @@ sources:
 - https://github.com/GoogleCloudPlatform/elasticsearch-docker
 - https://github.com/clockworksoul/helm-elasticsearch
 - https://github.com/pires/kubernetes-elasticsearch-cluster
-version: 1.7.2
+version: 1.11.0
