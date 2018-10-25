@@ -4,13 +4,11 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   # Pay attention to the redis-role label at runtime. The self-determination logic in the image sets this value accordingly.
-  name: stage-redis-ha-server
+  name: redis-ha-server
   labels:
-    name: stage-redis-ha-server
+    name: redis-ha-server
     redis-node: "true"
     app: redis-ha
-    heritage: "Tiller"
-    release: "stage"
     chart: redis-ha-2.2.3
 spec:
   replicas: 3
@@ -18,12 +16,11 @@ spec:
     metadata:
       labels:
         app: redis-ha
-        release: stage
         component: server
-        name: stage-redis-ha-server
+        name: redis-ha-server
         redis-node: "true"
     spec:
-      serviceAccountName: stage-redis-ha
+      serviceAccountName: default
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -32,7 +29,6 @@ spec:
               labelSelector:
                 matchLabels:
                   app: redis-ha
-                  release: stage
                   component: server
               topologyKey: kubernetes.io/hostname
       containers:
@@ -49,7 +45,7 @@ spec:
           - name: REDIS_SENTINEL_SERVICE_HOST
             value: "redis-sentinel"
           - name: REDIS_CHART_PREFIX
-            value: stage-redis-ha-
+            value: redis-ha-
         ports:
           - containerPort: 6379
         volumeMounts:

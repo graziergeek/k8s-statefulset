@@ -65,6 +65,11 @@ helm template \
 ```
 The helm release name will prefix the K8s resources created in the chart manifests.  That is, for a chart named `mongodb-replicaset`, for example, and a helm release name of, say, `stage`, the mongodb service will be named `stage-mongodb-replicaset`.
 
+#### Example Redis Template
+```
+helm template --name stage --set rbac.create=false --set serviceAccount.create=false --output-dir ./manifests ./redis-ha
+```
+
 ### Apply the new chart to the cluster with kubectl
 ```
 kubectl apply --recursive --filename ./manifests/<chart-name>

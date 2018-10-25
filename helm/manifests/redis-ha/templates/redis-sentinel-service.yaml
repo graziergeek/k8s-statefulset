@@ -3,13 +3,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: stage-redis-ha-sentinel
+  name: redis-ha-sentinel
   labels:
     name: redis-ha-sentinel-svc
     role: service
     app: redis-ha
-    heritage: "Tiller"
-    release: "stage"
     chart: redis-ha-2.2.3
 spec:
   ports:
@@ -17,5 +15,4 @@ spec:
       targetPort: 26379
   selector:
     app: redis-ha
-    release: "stage"
     redis-role: "sentinel"
